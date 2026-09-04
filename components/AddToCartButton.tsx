@@ -7,7 +7,7 @@ import type { Product } from "@/types";
 export default function AddToCartButton({ product }: { product: Product }) {
   const [qty, setQty] = useState(1);
   const addItem = useCartStore((s) => s.addItem);
-  const image = product.image_urls?.[0] || "/placeholder-food.png";
+  const image = product.image_urls?.[0] || "/placeholder-food.svg";
 
   return (
     <div className="mt-6 flex items-center gap-3">

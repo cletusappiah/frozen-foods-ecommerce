@@ -7,7 +7,7 @@ import type { Product } from "@/types";
 
 export default function ProductCard({ product }: { product: Product }) {
   const addItem = useCartStore((s) => s.addItem);
-  const image = product.image_urls?.[0] || "/placeholder-food.png";
+  const image = product.image_urls?.[0] || "/placeholder-food.svg";
 
   return (
     <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
