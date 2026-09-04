@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -67,23 +67,23 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-navy/10 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="text-lg font-bold text-blue-700">
+        <Link href="/" className="font-display text-lg font-semibold text-navy">
           Port-Fresh
         </Link>
-        <nav className="flex items-center gap-4 text-sm font-medium">
+        <nav className="flex items-center gap-4 text-sm font-medium text-navy">
           <Link href="/shop">Shop</Link>
           <Link href="/shop/account/orders">My Orders</Link>
           {isAdmin && (
-            <Link href="/admin" className="text-amber-700">
+            <Link href="/admin" className="text-coral">
               Admin
             </Link>
           )}
           <Link href="/shop/cart" className="relative">
             Cart
             {count > 0 && (
-              <span className="absolute -right-3 -top-2 rounded-full bg-blue-600 px-1.5 text-xs text-white">
+              <span className="absolute -right-3 -top-2 rounded-full bg-coral px-1.5 text-xs text-white">
                 {count}
               </span>
             )}
@@ -94,12 +94,12 @@ export default function Navbar() {
           ) : user ? (
             <button
               onClick={handleLogout}
-              className="rounded-full bg-slate-800 px-3 py-1.5 text-white"
+              className="rounded-full bg-navy px-3 py-1.5 text-white transition hover:brightness-110"
             >
               Logout
             </button>
           ) : (
-            <Link href="/login" className="rounded-full bg-blue-600 px-3 py-1.5 text-white">
+            <Link href="/login" className="rounded-full bg-coral px-3 py-1.5 text-white transition hover:brightness-105">
               Login
             </Link>
           )}
