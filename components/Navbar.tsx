@@ -11,11 +11,11 @@ export default function Navbar() {
   const items = useCartStore((s) => s.items);
   const count = items.reduce((n, i) => n + i.qty, 0);
 
+  const [supabase] = useState(() => createClient());
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const supabase = createClient();
 
   useEffect(() => {
     async function loadUserAndRole() {
@@ -57,7 +57,8 @@ export default function Navbar() {
     return () => {
       listener.subscription.unsubscribe();
     };
-  }, [supabase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleLogout() {
     await supabase.auth.signOut();
