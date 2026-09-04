@@ -12,18 +12,46 @@ export default function Navbar() {
   const count = items.reduce((n, i) => n + i.qty, 0);
 
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    async function loadUserAndRole() {
+      const { data } = await supabase.auth.getUser();
       setUser(data.user);
+
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", data.user.id)
+          .single();
+        setIsAdmin(profile?.role === "admin");
+      } else {
+        setIsAdmin(false);
+      }
+
       setLoading(false);
-    });
+    }
+
+    loadUserAndRole();
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", session.user.id)
+          .single()
+          .then(({ data: profile }) => {
+            setIsAdmin(profile?.role === "admin");
+          });
+      } else {
+        setIsAdmin(false);
+      }
     });
 
     return () => {
@@ -46,6 +74,11 @@ export default function Navbar() {
         <nav className="flex items-center gap-4 text-sm font-medium">
           <Link href="/shop">Shop</Link>
           <Link href="/shop/account/orders">My Orders</Link>
+          {isAdmin && (
+            <Link href="/admin" className="text-amber-700">
+              Admin
+            </Link>
+          )}
           <Link href="/shop/cart" className="relative">
             Cart
             {count > 0 && (
