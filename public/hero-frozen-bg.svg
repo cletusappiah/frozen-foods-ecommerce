@@ -1,0 +1,58 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" preserveAspectRatio="xMaxYMid slice">
+  <defs>
+    <radialGradient id="glow" cx="70%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#1F8FCB" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#1F8FCB" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="700" fill="url(#glow)"/>
+  <g stroke="#F7FAFC" stroke-width="2" stroke-linecap="round" opacity="0.35">
+    <g transform="translate(950,120)">
+      <line x1="-22" y1="0" x2="22" y2="0"/>
+      <line x1="0" y1="-22" x2="0" y2="22"/>
+      <line x1="-16" y1="-16" x2="16" y2="16"/>
+      <line x1="-16" y1="16" x2="16" y2="-16"/>
+    </g>
+    <g transform="translate(1080,300) scale(0.7)">
+      <line x1="-22" y1="0" x2="22" y2="0"/>
+      <line x1="0" y1="-22" x2="0" y2="22"/>
+      <line x1="-16" y1="-16" x2="16" y2="16"/>
+      <line x1="-16" y1="16" x2="16" y2="-16"/>
+    </g>
+    <g transform="translate(880,480) scale(1.1)">
+      <line x1="-22" y1="0" x2="22" y2="0"/>
+      <line x1="0" y1="-22" x2="0" y2="22"/>
+      <line x1="-16" y1="-16" x2="16" y2="16"/>
+      <line x1="-16" y1="16" x2="16" y2="-16"/>
+    </g>
+    <g transform="translate(1120,560) scale(0.6)">
+      <line x1="-22" y1="0" x2="22" y2="0"/>
+      <line x1="0" y1="-22" x2="0" y2="22"/>
+      <line x1="-16" y1="-16" x2="16" y2="16"/>
+      <line x1="-16" y1="16" x2="16" y2="-16"/>
+    </g>
+  </g>
+  <g fill="#1F8FCB" opacity="0.55">
+    <g transform="translate(980,220) rotate(-8)">
+      <ellipse cx="0" cy="0" rx="70" ry="30"/>
+      <path d="M -70 0 L -105 -22 L -105 22 Z"/>
+      <circle cx="35" cy="-6" r="5" fill="#0A2540"/>
+    </g>
+    <g transform="translate(1080,420) rotate(14) scale(0.75)">
+      <ellipse cx="0" cy="0" rx="70" ry="30"/>
+      <path d="M -70 0 L -105 -22 L -105 22 Z"/>
+      <circle cx="35" cy="-6" r="5" fill="#0A2540"/>
+    </g>
+  </g>
+  <g stroke="#FF6B4A" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.5">
+    <path d="M 900 600 Q 940 560 900 530 Q 870 505 895 480"/>
+    <path d="M 1150 180 Q 1190 140 1150 110 Q 1120 85 1145 60"/>
+  </g>
+  <g fill="none" stroke="#F7FAFC" stroke-width="1.5" opacity="0.25">
+    <rect x="1020" y="600" width="50" height="50" rx="6"/>
+    <rect x="1080" y="600" width="50" height="50" rx="6"/>
+    <rect x="1140" y="600" width="50" height="50" rx="6"/>
+    <rect x="1020" y="650" width="50" height="50" rx="6"/>
+    <rect x="1080" y="650" width="50" height="50" rx="6"/>
+  </g>
+</svg>
