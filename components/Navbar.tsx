@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useCartStore } from "@/lib/cartStore";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
@@ -16,6 +16,7 @@ export default function Navbar() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     async function loadUserAndRole() {
@@ -64,6 +65,11 @@ export default function Navbar() {
     await supabase.auth.signOut();
     router.push("/");
     router.refresh();
+  }
+
+  // Admin pages have their own sidebar navigation - skip the shop navbar there
+  if (pathname?.startsWith("/admin")) {
+    return null;
   }
 
   return (
