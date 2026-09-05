@@ -10,11 +10,11 @@ import type { User } from "@supabase/supabase-js";
 export default function Navbar() {
   const items = useCartStore((s) => s.items);
   const count = items.reduce((n, i) => n + i.qty, 0);
-
   const [supabase] = useState(() => createClient());
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const pathname = usePathname();
 
@@ -22,7 +22,6 @@ export default function Navbar() {
     async function loadUserAndRole() {
       const { data } = await supabase.auth.getUser();
       setUser(data.user);
-
       if (data.user) {
         const { data: profile } = await supabase
           .from("profiles")
@@ -33,12 +32,9 @@ export default function Navbar() {
       } else {
         setIsAdmin(false);
       }
-
       setLoading(false);
     }
-
     loadUserAndRole();
-
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -54,7 +50,6 @@ export default function Navbar() {
         setIsAdmin(false);
       }
     });
-
     return () => {
       listener.subscription.unsubscribe();
     };
@@ -67,6 +62,14 @@ export default function Navbar() {
     router.refresh();
   }
 
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = searchTerm.trim();
+    if (trimmed) {
+      router.push(`/shop?q=${encodeURIComponent(trimmed)}`);
+    }
+  }
+
   // Admin pages have their own sidebar navigation - skip the shop navbar there
   if (pathname?.startsWith("/admin")) {
     return null;
@@ -74,10 +77,30 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-navy/10 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="font-display text-lg font-semibold text-navy">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
+        <Link href="/" className="font-display shrink-0 text-lg font-semibold text-navy">
           Port-Fresh
         </Link>
+
+        <form
+          onSubmit={handleSearch}
+          className="order-3 flex w-full items-center gap-2 sm:order-none sm:w-auto sm:flex-1"
+        >
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search for fish, chicken, seafood..."
+            className="w-full rounded-full border border-navy/15 bg-ice px-4 py-2 text-sm text-navy placeholder:text-slate-body/70 focus:border-frost focus:outline-none"
+          />
+          <button
+            type="submit"
+            className="shrink-0 rounded-full bg-navy px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
+          >
+            Search
+          </button>
+        </form>
+
         <nav className="flex items-center gap-4 text-sm font-medium text-navy">
           <Link href="/shop">Shop</Link>
           <Link href="/shop/account/orders">My Orders</Link>
@@ -94,7 +117,6 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-
           {loading ? (
             <span className="w-16" />
           ) : user ? (
