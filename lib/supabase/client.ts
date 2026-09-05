@@ -2,9 +2,6 @@
 
 import { createBrowserClient } from "@supabase/ssr";
 
-// Singleton: only ever create ONE Supabase client for the whole browser tab.
-// Creating more than one causes competing token-refresh loops that log
-// users out repeatedly.
 let client: ReturnType<typeof createBrowserClient> | undefined;
 
 export function createClient() {
@@ -12,7 +9,14 @@ export function createClient() {
 
   client = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: true,
+        detectSessionInUrl: true,
+      },
+    }
   );
 
   return client;
