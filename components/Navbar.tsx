@@ -7,6 +7,26 @@ import { useCartStore } from "@/lib/cartStore";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
+function ShopIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+      <path d="M3 6h18" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+  );
+}
+
+function CartIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="21" r="1" />
+      <circle cx="19" cy="21" r="1" />
+      <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12" />
+    </svg>
+  );
+}
+
 export default function Navbar() {
   const items = useCartStore((s) => s.items);
   const count = items.reduce((n, i) => n + i.qty, 0);
@@ -70,17 +90,22 @@ export default function Navbar() {
     }
   }
 
-  // Admin pages have their own sidebar navigation - skip the shop navbar there
   if (pathname?.startsWith("/admin")) {
     return null;
   }
 
+  const showBrand = !loading && !user;
+
   return (
     <header className="sticky top-0 z-40 border-b border-navy/10 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
-        <Link href="/" className="font-display shrink-0 text-lg font-semibold text-navy">
-          Port-Fresh
-        </Link>
+        {showBrand ? (
+          <Link href="/" className="font-display shrink-0 text-lg font-semibold text-navy">
+            Port-Fresh
+          </Link>
+        ) : (
+          <span className="shrink-0" />
+        )}
 
         <form
           onSubmit={handleSearch}
@@ -102,14 +127,18 @@ export default function Navbar() {
         </form>
 
         <nav className="flex items-center gap-4 text-sm font-medium text-navy">
-          <Link href="/shop">Shop</Link>
+          <Link href="/shop" className="flex items-center gap-1.5">
+            <ShopIcon />
+            Shop
+          </Link>
           <Link href="/shop/account/orders">My Orders</Link>
           {isAdmin && (
             <Link href="/admin" className="text-coral">
               Admin
             </Link>
           )}
-          <Link href="/shop/cart" className="relative">
+          <Link href="/shop/cart" className="relative flex items-center gap-1.5">
+            <CartIcon />
             Cart
             {count > 0 && (
               <span className="absolute -right-3 -top-2 rounded-full bg-coral px-1.5 text-xs text-white">

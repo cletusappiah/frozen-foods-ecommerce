@@ -9,18 +9,21 @@ const SLIDES = [
     body: "Order fish, chicken, seafood and meat sourced straight from the port. We handle the early morning - you just open the door when it arrives.",
     cta: "Shop now",
     ctaHref: "/shop",
+    bgClass: "bg-navy",
   },
   {
     heading: "Fresh frozen fish, every week.",
     body: "Tilapia, seafood and more, kept cold from the port to your freezer. No middlemen, no markup.",
     cta: "Browse fish",
     ctaHref: "/shop?category=fish",
+    bgClass: "bg-teal",
   },
   {
     heading: "Stock your freezer, save the trip.",
     body: "Chicken, meat and frozen vegetables delivered to your door across Accra.",
     cta: "See all products",
     ctaHref: "/shop",
+    bgClass: "bg-frost",
   },
 ];
 
@@ -37,7 +40,7 @@ export default function HeroCarousel() {
   const slide = SLIDES[index];
 
   return (
-    <section className="relative overflow-hidden bg-navy">
+    <section className={`relative overflow-hidden transition-colors duration-700 ${slide.bgClass}`}>
       <div
         className="absolute inset-0"
         style={{
