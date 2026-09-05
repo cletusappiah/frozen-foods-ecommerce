@@ -28,12 +28,17 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session if expired - required for Server Components to see it
   await supabase.auth.getUser();
 
   return response;
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: [
+    "/admin/:path*",
+    "/shop/account/:path*",
+    "/shop/checkout",
+    "/login",
+    "/signup",
+  ],
 };

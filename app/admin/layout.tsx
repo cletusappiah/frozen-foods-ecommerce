@@ -26,7 +26,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="flex min-h-screen bg-ice">
       <aside className="hidden w-56 flex-col border-r border-navy/10 bg-navy sm:flex">
         <div className="border-b border-white/10 px-5 py-5">
-          <Link href="/" className="font-display text-lg font-semibold text-white">
+          <Link href="/" prefetch={false} className="font-display text-lg font-semibold text-white">
             Port-Fresh
           </Link>
           <p className="mt-0.5 text-xs text-white/50">Admin</p>
@@ -36,6 +36,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Link
               key={item.href}
               href={item.href}
+              prefetch={false}
               className="block rounded-lg px-3 py-2 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
             >
               {item.label}
@@ -43,7 +44,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           ))}
         </nav>
         <div className="border-t border-white/10 px-5 py-4">
-          <Link href="/shop" className="text-xs font-medium text-white/60 hover:text-white">
+          <Link href="/shop" prefetch={false} className="text-xs font-medium text-white/60 hover:text-white">
             &larr; View store
           </Link>
         </div>
