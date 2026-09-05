@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ProductCard";
+import HeroCarousel from "@/components/HeroCarousel";
 
 export const revalidate = 60;
 
@@ -18,45 +19,8 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* Hero - illustrated frozen-foods background, fading to transparent behind the text */}
-      <section className="relative overflow-hidden bg-navy">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "url('/hero-frozen-bg.svg')",
-            backgroundSize: "cover",
-            backgroundPosition: "right center",
-            WebkitMaskImage: "linear-gradient(to right, transparent 0%, transparent 20%, black 60%)",
-            maskImage: "linear-gradient(to right, transparent 0%, transparent 20%, black 60%)",
-          }}
-        />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:grid-cols-5 sm:py-24">
-          <div className="hero-rise sm:col-span-3">
-            <h1 className="font-display text-4xl font-semibold leading-[1.1] text-white sm:text-5xl">
-              Skip the sunrise trip to the port.
-            </h1>
-            <p className="mt-5 max-w-md text-lg text-white/70">
-              Order fish, chicken, seafood and meat sourced straight from the
-              port. We handle the early morning - you just open the door when
-              it arrives.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link
-                href="/shop"
-                className="rounded-full bg-coral px-7 py-3 font-semibold text-white shadow-lg shadow-coral/20 transition hover:brightness-105"
-              >
-                Shop now
-              </Link>
-              <Link href="/signup" className="font-medium text-white/80 underline-offset-4 hover:underline">
-                Create an account
-              </Link>
-            </div>
-          </div>
-          <div className="hidden sm:col-span-2 sm:block" />
-        </div>
-      </section>
+      <HeroCarousel />
 
-      {/* Categories + Popular products - wrapped with a faint tiled frost pattern */}
       <div style={{ backgroundImage: "url('/section-frost-pattern.svg')", backgroundRepeat: "repeat" }}>
         <section className="mx-auto max-w-6xl px-4 py-10">
           <h2 className="font-display mb-5 text-xl font-semibold text-navy">Shop by category</h2>
