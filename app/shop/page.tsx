@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ProductCard";
 
@@ -9,7 +10,13 @@ export default async function ShopPage({
   searchParams: { category?: string };
 }) {
   const supabase = createClient();
-  let query = supabase.from("products").select("*, categories(slug)").eq("is_active", true);
+
+  const { data: categories } = await supabase.from("categories").select("*");
+
+  let query = supabase
+    .from("products")
+    .select("*, categories(slug)")
+    .eq("is_active", true);
 
   if (searchParams.category) {
     const { data: cat } = await supabase
@@ -22,17 +29,57 @@ export default async function ShopPage({
 
   const { data: products } = await query;
 
+  const activeCategory = searchParams.category;
+  const activeCategoryName = categories?.find((c) => c.slug === activeCategory)?.name;
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold">
-        {searchParams.category ? `Category: ${searchParams.category}` : "All products"}
+      <h1 className="font-display mb-1 text-2xl font-semibold text-navy">
+        {activeCategoryName ? activeCategoryName : "All products"}
       </h1>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <p className="mb-6 text-sm text-slate-body">
+        {products?.length ?? 0} {products?.length === 1 ? "item" : "items"} available
+      </p>
+
+      {categories && categories.length > 0 && (
+        <div className="mb-6 flex flex-wrap gap-2">
+          <Link
+            href="/shop"
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+              !activeCategory
+                ? "bg-navy text-white"
+                : "border border-navy/15 text-navy hover:border-frost"
+            }`}
+          >
+            All
+          </Link>
+          {categories.map((c) => (
+            <Link
+              key={c.id}
+              href={`/shop?category=${c.slug}`}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+                activeCategory === c.slug
+                  ? "bg-navy text-white"
+                  : "border border-navy/15 text-navy hover:border-frost"
+              }`}
+            >
+              {c.name}
+            </Link>
+          ))}
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {products?.map((p: any) => (
           <ProductCard key={p.id} product={p} />
         ))}
-        {products?.length === 0 && <p className="text-slate-500">No products found.</p>}
       </div>
+
+      {products?.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-navy/15 bg-white py-16 text-center">
+          <p className="text-slate-body">No products found in this category.</p>
+        </div>
+      )}
     </div>
   );
 }
