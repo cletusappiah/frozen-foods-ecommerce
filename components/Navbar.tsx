@@ -198,3 +198,37 @@ export default function Navbar() {
                   >
                     My Account
                   </Link>
+                  <Link
+                    href="/shop/account/orders"
+                    className="block px-4 py-2 text-sm text-navy hover:bg-ice"
+                  >
+                    My Orders
+                  </Link>
+                  <Link
+                    href="/shop/wishlist"
+                    className="block px-4 py-2 text-sm text-navy hover:bg-ice"
+                  >
+                    Wishlist
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full px-4 py-2 text-left text-sm text-navy hover:bg-ice"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-full bg-coral px-3 py-1.5 text-white transition hover:brightness-105"
+            >
+              Login
+            </Link>
+          )}
+        </nav>
+      </div>
+    </header>
+  );
+}
