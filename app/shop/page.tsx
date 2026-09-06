@@ -1,8 +1,16 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ProductCard";
 
 export const revalidate = 30;
+
+const CATEGORY_ICON: Record<string, string> = {
+  fish: "F",
+  chicken: "C",
+  seafood: "S",
+  meat: "M",
+  "frozen-vegetables": "V",
+};
 
 export default async function ShopPage({
   searchParams,
@@ -34,36 +42,45 @@ export default async function ShopPage({
   const { data: products } = await query;
 
   const activeCategory = searchParams.category;
-  const activeCategoryName = categories?.find((c) => c.slug === activeCategory)?.name;
   const searchQuery = searchParams.q;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       {!searchQuery && categories && categories.length > 0 && (
-        <div className="mb-6 flex gap-2 overflow-x-auto pb-1 lg:hidden">
+        <div className="mb-6 flex gap-3 overflow-x-auto pb-1 lg:hidden">
           <Link
             href="/shop"
-            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition ${
+            className={`flex shrink-0 flex-col items-center gap-1 rounded-2xl border px-4 py-3 text-center transition ${
               !activeCategory
-                ? "bg-navy text-white"
-                : "border border-navy/15 text-navy hover:border-frost"
+                ? "border-navy bg-navy text-white"
+                : "border-navy/15 bg-white text-navy hover:border-frost"
             }`}
           >
-            All
+            <span className="font-display text-sm font-semibold">All</span>
           </Link>
-          {categories.map((c) => (
-            <Link
-              key={c.id}
-              href={`/shop?category=${c.slug}`}
-              className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition ${
-                activeCategory === c.slug
-                  ? "bg-navy text-white"
-                  : "border border-navy/15 text-navy hover:border-frost"
-              }`}
-            >
-              {c.name}
-            </Link>
-          ))}
+          {categories.map((c) => {
+            const isActive = activeCategory === c.slug;
+            return (
+              <Link
+                key={c.id}
+                href={`/shop?category=${c.slug}`}
+                className={`flex shrink-0 flex-col items-center gap-1 rounded-2xl border px-4 py-3 text-center transition ${
+                  isActive
+                    ? "border-navy bg-navy text-white"
+                    : "border-navy/15 bg-white text-navy hover:border-frost"
+                }`}
+              >
+                <span
+                  className={`font-display text-sm font-semibold ${
+                    isActive ? "text-white" : "text-frost"
+                  }`}
+                >
+                  {CATEGORY_ICON[c.slug] || c.name.charAt(0)}
+                </span>
+                <span className="whitespace-nowrap text-xs font-medium">{c.name}</span>
+              </Link>
+            );
+          })}
         </div>
       )}
 
@@ -104,21 +121,15 @@ export default async function ShopPage({
         )}
 
         <div>
-          <h1 className="font-display mb-1 text-2xl font-semibold text-navy">
-            {searchQuery
-              ? `Search results for "${searchQuery}"`
-              : activeCategoryName
-              ? activeCategoryName
-              : "All products"}
-          </h1>
-          <p className="mb-6 text-sm text-slate-body">
-            {products?.length ?? 0} {products?.length === 1 ? "item" : "items"} available
-          </p>
-
           {searchQuery && (
-            <Link href="/shop" className="mb-6 inline-block text-sm text-frost underline">
-              Clear search and browse all products
-            </Link>
+            <>
+              <h1 className="font-display mb-1 text-2xl font-semibold text-navy">
+                Search results for &quot;{searchQuery}&quot;
+              </h1>
+              <Link href="/shop" className="mb-6 inline-block text-sm text-frost underline">
+                Clear search and browse all products
+              </Link>
+            </>
           )}
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
