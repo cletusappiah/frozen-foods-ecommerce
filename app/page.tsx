@@ -1,4 +1,5 @@
-﻿import ProductCard from "@/components/ProductCard";
+﻿import { redirect } from "next/navigation";
+import ProductCard from "@/components/ProductCard";
 import HeroCarousel from "@/components/HeroCarousel";
 import { createClient } from "@/lib/supabase/server";
 
@@ -7,18 +8,33 @@ export const revalidate = 60;
 export default async function HomePage() {
   const supabase = createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.role === "admin") {
+      redirect("/admin");
+    } else {
+      redirect("/shop");
+    }
+  }
+
   const { data: products } = await supabase
     .from("products")
     .select("*")
     .eq("is_active", true)
     .limit(8);
-
   const [firstProduct, ...restProducts] = products || [];
-
   return (
     <div>
       <HeroCarousel />
-
       <div style={{ backgroundImage: "url('/section-frost-pattern.svg')", backgroundRepeat: "repeat" }}>
         {products && products.length > 0 && (
           <section className="mx-auto max-w-6xl px-4 py-10 pb-20">
