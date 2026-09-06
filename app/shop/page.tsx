@@ -38,63 +38,106 @@ export default async function ShopPage({
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
-      {categories && categories.length > 0 && !searchQuery && (
-        <div className="mb-6 flex gap-3 overflow-x-auto pb-1">
+      {!searchQuery && categories && categories.length > 0 && (
+        <div className="mb-6 flex gap-2.5 overflow-x-auto pb-2">
           <Link
             href="/shop"
-            className={`shrink-0 whitespace-nowrap rounded-full border px-5 py-2.5 text-sm font-medium transition ${
+            className={`flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-semibold transition ${
               !activeCategory
                 ? "border-navy bg-navy text-white"
-                : "border-navy/15 bg-white text-navy hover:border-frost"
+                : "border-navy/15 bg-white text-navy hover:border-navy/40"
             }`}
           >
-            All Products
+            All
           </Link>
-          {categories.map((c) => {
-            const isActive = activeCategory === c.slug;
-            return (
-              <Link
-                key={c.id}
-                href={`/shop?category=${c.slug}`}
-                className={`shrink-0 whitespace-nowrap rounded-full border px-5 py-2.5 text-sm font-medium transition ${
-                  isActive
-                    ? "border-navy bg-navy text-white"
-                    : "border-navy/15 bg-white text-navy hover:border-frost"
+          {categories.map((c) => (
+            <Link
+              key={c.id}
+              href={`/shop?category=${c.slug}`}
+              className={`flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition ${
+                activeCategory === c.slug
+                  ? "border-navy bg-navy text-white"
+                  : "border-navy/15 bg-white text-navy hover:border-navy/40"
+              }`}
+            >
+              <span
+                className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold ${
+                  activeCategory === c.slug ? "bg-white text-navy" : "bg-frost/15 text-frost"
                 }`}
               >
-                {c.name}
+                {c.name.charAt(0)}
+              </span>
+              {c.name}
+            </Link>
+          ))}
+        </div>
+      )}
+
+      <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
+        {categories && categories.length > 0 && (
+          <aside className="hidden lg:block">
+            <div className="sticky top-20 rounded-2xl border border-navy/10 bg-white p-4">
+              <h2 className="font-display mb-3 text-sm font-semibold uppercase tracking-wide text-slate-body">
+                Categories
+              </h2>
+              <nav className="flex flex-col gap-1">
+                <Link
+                  href="/shop"
+                  className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                    !activeCategory && !searchQuery
+                      ? "bg-navy text-white"
+                      : "text-navy hover:bg-ice"
+                  }`}
+                >
+                  All products
+                </Link>
+                {categories.map((c) => (
+                  <Link
+                    key={c.id}
+                    href={`/shop?category=${c.slug}`}
+                    className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                      activeCategory === c.slug
+                        ? "bg-navy text-white"
+                        : "text-navy hover:bg-ice"
+                    }`}
+                  >
+                    {c.name}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          </aside>
+        )}
+
+        <div>
+          {searchQuery && (
+            <>
+              <h1 className="font-display mb-1 text-2xl font-semibold text-navy">
+                Search results for "{searchQuery}"
+              </h1>
+              <Link href="/shop" className="mb-6 inline-block text-sm text-frost underline">
+                Clear search and browse all products
               </Link>
-            );
-          })}
+            </>
+          )}
+
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {products?.map((p: any) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+
+          {products?.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-navy/15 bg-white py-16 text-center">
+              <p className="text-slate-body">
+                {searchQuery
+                  ? `No products found matching "${searchQuery}".`
+                  : "No products found in this category."}
+              </p>
+            </div>
+          )}
         </div>
-      )}
-
-      {searchQuery && (
-        <>
-          <h1 className="font-display mb-1 text-2xl font-semibold text-navy">
-            Search results for &quot;{searchQuery}&quot;
-          </h1>
-          <Link href="/shop" className="mb-6 inline-block text-sm text-frost underline">
-            Clear search and browse all products
-          </Link>
-        </>
-      )}
-
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {products?.map((p: any) => (
-          <ProductCard key={p.id} product={p} />
-        ))}
       </div>
-
-      {products?.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-navy/15 bg-white py-16 text-center">
-          <p className="text-slate-body">
-            {searchQuery
-              ? `No products found matching "${searchQuery}".`
-              : "No products found in this category."}
-          </p>
-        </div>
-      )}
     </div>
   );
 }
