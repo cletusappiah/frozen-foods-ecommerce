@@ -4,14 +4,6 @@ import ProductCard from "@/components/ProductCard";
 
 export const revalidate = 30;
 
-const CATEGORY_ICON: Record<string, string> = {
-  fish: "F",
-  chicken: "C",
-  seafood: "S",
-  meat: "M",
-  "frozen-vegetables": "V",
-};
-
 export default async function ShopPage({
   searchParams,
 }: {
@@ -50,16 +42,13 @@ export default async function ShopPage({
         <div className="mb-6 flex gap-3 overflow-x-auto pb-1">
           <Link
             href="/shop"
-            className={`flex shrink-0 flex-col items-center gap-1 rounded-2xl border px-5 py-3 text-center transition ${
+            className={`shrink-0 whitespace-nowrap rounded-full border px-5 py-2.5 text-sm font-medium transition ${
               !activeCategory
                 ? "border-navy bg-navy text-white"
                 : "border-navy/15 bg-white text-navy hover:border-frost"
             }`}
           >
-            <span className={`font-display text-sm font-semibold ${!activeCategory ? "text-white" : "text-frost"}`}>
-              All
-            </span>
-            <span className="whitespace-nowrap text-xs font-medium">Products</span>
+            All Products
           </Link>
           {categories.map((c) => {
             const isActive = activeCategory === c.slug;
@@ -67,16 +56,13 @@ export default async function ShopPage({
               <Link
                 key={c.id}
                 href={`/shop?category=${c.slug}`}
-                className={`flex shrink-0 flex-col items-center gap-1 rounded-2xl border px-5 py-3 text-center transition ${
+                className={`shrink-0 whitespace-nowrap rounded-full border px-5 py-2.5 text-sm font-medium transition ${
                   isActive
                     ? "border-navy bg-navy text-white"
                     : "border-navy/15 bg-white text-navy hover:border-frost"
                 }`}
               >
-                <span className={`font-display text-sm font-semibold ${isActive ? "text-white" : "text-frost"}`}>
-                  {CATEGORY_ICON[c.slug] || c.name.charAt(0)}
-                </span>
-                <span className="whitespace-nowrap text-xs font-medium">{c.name}</span>
+                {c.name}
               </Link>
             );
           })}
