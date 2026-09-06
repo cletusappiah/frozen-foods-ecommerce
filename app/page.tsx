@@ -39,7 +39,7 @@ export default async function HomePage() {
         {products && products.length > 0 && (
           <section className="mx-auto max-w-6xl px-4 py-10 pb-20">
             <h2 className="font-display mb-5 text-xl font-semibold text-navy">Popular right now</h2>
-            <div className="grid gap-4 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
               {firstProduct && (
                 <div className="sm:col-span-2 sm:row-span-2">
                   <ProductCard product={firstProduct} />
