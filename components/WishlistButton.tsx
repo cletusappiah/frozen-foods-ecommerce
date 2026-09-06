@@ -1,19 +1,34 @@
 ﻿"use client";
-
+import { useRouter } from "next/navigation";
 import { useWishlistStore } from "@/lib/wishlistStore";
+import { createClient } from "@/lib/supabase/client";
 
 export default function WishlistButton({ productId }: { productId: string }) {
+  const router = useRouter();
   const isSaved = useWishlistStore((s) => s.isSaved(productId));
   const toggle = useWishlistStore((s) => s.toggle);
+
+  async function handleClick(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.push("/login?next=/shop");
+      return;
+    }
+
+    toggle(productId);
+  }
 
   return (
     <button
       type="button"
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggle(productId);
-      }}
+      onClick={handleClick}
       aria-label={isSaved ? "Remove from wishlist" : "Add to wishlist"}
       className="absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur transition hover:scale-105"
     >

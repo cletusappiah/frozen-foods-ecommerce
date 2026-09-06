@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useCartStore } from "@/lib/cartStore";
 import { createClient } from "@/lib/supabase/client";
@@ -27,10 +27,19 @@ function CartIcon() {
   );
 }
 
-function HeartIcon() {
+function UserIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+      <path d="M20 21a8 8 0 0 0-16 0" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
+function ChevronIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m6 9 6 6 6-6" />
     </svg>
   );
 }
@@ -43,6 +52,8 @@ export default function Navbar() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -84,7 +95,22 @@ export default function Navbar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
   async function handleLogout() {
+    setMenuOpen(false);
     await supabase.auth.signOut();
     router.push("/");
     router.refresh();
@@ -102,18 +128,12 @@ export default function Navbar() {
     return null;
   }
 
-  const showBrand = !loading && !user;
-
   return (
     <header className="sticky top-0 z-40 border-b border-navy/10 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
-        {showBrand ? (
-          <Link href="/" className="font-display shrink-0 text-lg font-semibold text-navy">
-            Port-Fresh
-          </Link>
-        ) : (
-          <span className="shrink-0" />
-        )}
+        <Link href="/" className="font-display shrink-0 text-lg font-semibold text-navy">
+          Port-Fresh
+        </Link>
 
         <form
           onSubmit={handleSearch}
@@ -139,16 +159,7 @@ export default function Navbar() {
             <ShopIcon />
             Shop
           </Link>
-          <Link href="/shop/account/orders">My Orders</Link>
-          <Link href="/shop/wishlist" className="flex items-center gap-1.5">
-            <HeartIcon />
-            Wishlist
-          </Link>
-          {isAdmin && (
-            <Link href="/admin" className="text-coral">
-              Admin
-            </Link>
-          )}
+
           <Link href="/shop/cart" className="relative flex items-center gap-1.5">
             <CartIcon />
             Cart
@@ -158,17 +169,53 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+
           {loading ? (
             <span className="w-16" />
           ) : user ? (
-            <button
-              onClick={handleLogout}
-              className="rounded-full bg-navy px-3 py-1.5 text-white transition hover:brightness-110"
-            >
-              Logout
-            </button>
+            <div ref={menuRef} className="relative">
+              <button
+                onClick={() => setMenuOpen((o) => !o)}
+                className="flex items-center gap-1.5 rounded-full border border-navy/15 px-3 py-1.5 transition hover:bg-ice"
+              >
+                <UserIcon />
+                Account
+                <ChevronIcon />
+              </button>
+              {menuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-navy/10 bg-white py-1.5 shadow-lg">
+                  <Link
+                    href="/shop/account"
+                    className="block px-4 py-2 text-sm text-navy hover:bg-ice"
+                  >
+                    My Account
+                  </Link>
+                  <Link
+                    href="/shop/account/orders"
+                    className="block px-4 py-2 text-sm text-navy hover:bg-ice"
+                  >
+                    My Orders
+                  </Link>
+                  <Link
+                    href="/shop/wishlist"
+                    className="block px-4 py-2 text-sm text-navy hover:bg-ice"
+                  >
+                    Wishlist
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full px-4 py-2 text-left text-sm text-navy hover:bg-ice"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
-            <Link href="/login" className="rounded-full bg-coral px-3 py-1.5 text-white transition hover:brightness-105">
+            <Link
+              href="/login"
+              className="rounded-full bg-coral px-3 py-1.5 text-white transition hover:brightness-105"
+            >
               Login
             </Link>
           )}
