@@ -1,17 +1,21 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { useCartStore } from "@/lib/cartStore";
+import { useToastStore } from "@/lib/toastStore";
+import WishlistButton from "@/components/WishlistButton";
 import type { Product } from "@/types";
 
 export default function ProductCard({ product }: { product: Product }) {
   const addItem = useCartStore((s) => s.addItem);
+  const showToast = useToastStore((s) => s.showToast);
   const image = product.image_urls?.[0] || "/placeholder-food.svg";
   const outOfStock = product.stock_qty <= 0;
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl border border-navy/10 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-navy/5">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-navy/10 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-navy/5">
+      <WishlistButton productId={product.id} />
       <Link
         href={`/shop/products/${product.id}`}
         className="relative aspect-square overflow-hidden bg-ice"
@@ -29,7 +33,6 @@ export default function ProductCard({ product }: { product: Product }) {
           </span>
         )}
       </Link>
-
       <div className="flex flex-1 flex-col gap-1 p-3.5">
         <Link
           href={`/shop/products/${product.id}`}
@@ -38,13 +41,12 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.name}
         </Link>
         <span className="text-xs text-slate-body">{product.unit}</span>
-
         <div className="mt-2 flex items-center justify-between gap-2">
           <span className="font-display text-lg font-semibold text-navy">
             GHS {product.price.toFixed(2)}
           </span>
           <button
-            onClick={() =>
+            onClick={() => {
               addItem({
                 product_id: product.id,
                 name: product.name,
@@ -52,8 +54,9 @@ export default function ProductCard({ product }: { product: Product }) {
                 qty: 1,
                 image_url: image,
                 unit: product.unit,
-              })
-            }
+              });
+              showToast(`${product.name} added to cart`);
+            }}
             disabled={outOfStock}
             className="shrink-0 rounded-full bg-coral px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:bg-slate-body/20 disabled:text-slate-body"
           >
