@@ -18,6 +18,7 @@ export default function WishlistButton({ productId }: { productId: string }) {
     } = await supabase.auth.getUser();
 
     if (!user) {
+      localStorage.setItem("pending-wishlist-add", productId);
       router.push("/login?next=/shop");
       return;
     }

@@ -184,43 +184,17 @@ export default function Navbar() {
               </button>
               {menuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-navy/10 bg-white py-1.5 shadow-lg">
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      className="block px-4 py-2 text-sm text-coral hover:bg-ice"
+                    >
+                      Dashboard
+                    </Link>
+                  )}
                   <Link
                     href="/shop/account"
                     className="block px-4 py-2 text-sm text-navy hover:bg-ice"
                   >
                     My Account
                   </Link>
-                  <Link
-                    href="/shop/account/orders"
-                    className="block px-4 py-2 text-sm text-navy hover:bg-ice"
-                  >
-                    My Orders
-                  </Link>
-                  <Link
-                    href="/shop/wishlist"
-                    className="block px-4 py-2 text-sm text-navy hover:bg-ice"
-                  >
-                    Wishlist
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full px-4 py-2 text-left text-sm text-navy hover:bg-ice"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link
-              href="/login"
-              className="rounded-full bg-coral px-3 py-1.5 text-white transition hover:brightness-105"
-            >
-              Login
-            </Link>
-          )}
-        </nav>
-      </div>
-    </header>
-  );
-}

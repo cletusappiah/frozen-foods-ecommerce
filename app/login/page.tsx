@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import AuthBrandPanel from "@/components/AuthBrandPanel";
+import { useWishlistStore } from "@/lib/wishlistStore";
 
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
+  const addToWishlist = useWishlistStore((s) => s.add);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -27,6 +29,12 @@ function LoginForm() {
       setLoading(false);
       setError(error.message);
       return;
+    }
+
+    const pendingWishlistId = localStorage.getItem("pending-wishlist-add");
+    if (pendingWishlistId) {
+      addToWishlist(pendingWishlistId);
+      localStorage.removeItem("pending-wishlist-add");
     }
 
     const { data: profile } = await supabase
