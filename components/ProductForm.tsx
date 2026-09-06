@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -15,6 +15,12 @@ type Product = {
   image_urls: string[] | null;
   video_url: string | null;
   is_active: boolean;
+  category_id: string | null;
+};
+
+type Category = {
+  id: string;
+  name: string;
 };
 
 function slugify(text: string) {
@@ -35,6 +41,8 @@ export default function ProductForm({
   const router = useRouter();
   const supabase = createClient();
 
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryId, setCategoryId] = useState(initialProduct?.category_id ?? "");
   const [name, setName] = useState(initialProduct?.name ?? "");
   const [description, setDescription] = useState(initialProduct?.description ?? "");
   const [unit, setUnit] = useState(initialProduct?.unit ?? "");
@@ -46,6 +54,16 @@ export default function ProductForm({
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    supabase
+      .from("categories")
+      .select("id, name")
+      .then(({ data }) => {
+        if (data) setCategories(data);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -87,6 +105,12 @@ export default function ProductForm({
     setSaving(true);
     setError("");
 
+    if (!categoryId) {
+      setError("Please choose a category for this product.");
+      setSaving(false);
+      return;
+    }
+
     const payload = {
       name,
       slug: slugify(name),
@@ -97,6 +121,7 @@ export default function ProductForm({
       image_urls: imageUrls,
       video_url: videoUrl || null,
       is_active: isActive,
+      category_id: categoryId,
     };
 
     if (mode === "new") {
@@ -131,6 +156,25 @@ export default function ProductForm({
       {error && (
         <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
       )}
+
+      <div>
+        <label className="mb-1 block text-sm font-medium">Category</label>
+        <select
+          required
+          value={categoryId}
+          onChange={(e) => setCategoryId(e.target.value)}
+          className="w-full rounded-lg border border-slate-300 px-3 py-2"
+        >
+          <option value="" disabled>
+            Choose a category
+          </option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <div>
         <label className="mb-1 block text-sm font-medium">Name</label>
