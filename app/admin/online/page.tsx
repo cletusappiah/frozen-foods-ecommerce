@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { onOnlineSync } from "@/lib/onlineChannel";
 
 interface OnlinePerson {
   key: string;
@@ -13,26 +13,16 @@ export default function AdminOnlinePage() {
   const [people, setPeople] = useState<OnlinePerson[]>([]);
 
   useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase.channel("online-users", {
-      config: { presence: { key: "admin-viewer" } },
+    const unsubscribe = onOnlineSync((state) => {
+      const list: OnlinePerson[] = Object.entries(state).map(([key, entries]) => ({
+        key,
+        name: entries[0]?.name || "Unknown",
+        online_at: entries[0]?.online_at || "",
+      }));
+      setPeople(list);
     });
 
-    channel
-      .on("presence", { event: "sync" }, () => {
-        const state = channel.presenceState<{ name: string; online_at: string }>();
-        const list: OnlinePerson[] = Object.entries(state).map(([key, entries]) => ({
-          key,
-          name: entries[0]?.name || "Unknown",
-          online_at: entries[0]?.online_at || "",
-        }));
-        setPeople(list);
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return unsubscribe;
   }, []);
 
   return (

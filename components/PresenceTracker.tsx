@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { initOnlineChannel } from "@/lib/onlineChannel";
 
 function getGuestId() {
   if (typeof window === "undefined") return "guest";
@@ -16,16 +17,17 @@ function getGuestId() {
 export default function PresenceTracker() {
   useEffect(() => {
     const supabase = createClient();
-    let channelKey = getGuestId();
-    let label = "Guest";
 
     async function join() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
+      let key = getGuestId();
+      let label = "Guest";
+
       if (user) {
-        channelKey = user.id;
+        key = user.id;
         const { data: profile } = await supabase
           .from("profiles")
           .select("full_name")
@@ -34,27 +36,10 @@ export default function PresenceTracker() {
         label = profile?.full_name || user.email || "Customer";
       }
 
-      const channel = supabase.channel("online-users", {
-        config: { presence: { key: channelKey } },
-      });
-
-      channel.subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
-          await channel.track({ name: label, online_at: new Date().toISOString() });
-        }
-      });
-
-      return channel;
+      initOnlineChannel(key, label);
     }
 
-    let activeChannel: ReturnType<typeof supabase.channel> | null = null;
-    join().then((ch) => {
-      activeChannel = ch;
-    });
-
-    return () => {
-      if (activeChannel) supabase.removeChannel(activeChannel);
-    };
+    join();
   }, []);
 
   return null;
