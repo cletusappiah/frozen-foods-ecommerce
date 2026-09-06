@@ -7,6 +7,7 @@ const NAV = [
   { href: "/admin/products", label: "Products" },
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/customers", label: "Customers" },
+  { href: "/admin/online", label: "Online now" },
   { href: "/admin/payments", label: "Payments" },
   { href: "/admin/content", label: "Content" },
   { href: "/admin/settings", label: "Settings" },
@@ -26,9 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="flex min-h-screen bg-ice">
       <aside className="hidden w-56 flex-col border-r border-navy/10 bg-navy sm:flex">
         <div className="border-b border-white/10 px-5 py-5">
-          <Link href="/" prefetch={false} className="font-display text-lg font-semibold text-white">
-            Port-Fresh
-          </Link>
+          <span className="font-display text-lg font-semibold text-white">Port-Fresh</span>
           <p className="mt-0.5 text-xs text-white/50">Admin</p>
         </div>
         <nav className="flex-1 space-y-1 px-3 py-4">
