@@ -25,17 +25,18 @@ export async function POST(req: Request) {
 
   if (event.event === "charge.success") {
     const orderId = event.data.metadata?.order_id;
-    const email = event.data.customer?.email;
 
     if (orderId) {
-      await supabase
+      const { data: updatedOrder } = await supabase
         .from("orders")
         .update({
           payment_status: "paid",
           status: "confirmed",
           payment_reference: event.data.reference,
         })
-        .eq("id", orderId);
+        .eq("id", orderId)
+        .select("user_id")
+        .single();
 
       const { data: items } = await supabase
         .from("order_items")
@@ -60,6 +61,15 @@ export async function POST(req: Request) {
         }
       }
 
+      let email = event.data.customer?.email;
+
+      if (!email && updatedOrder?.user_id) {
+        const { data: userData } = await supabase.auth.admin.getUserById(
+          updatedOrder.user_id
+        );
+        email = userData?.user?.email;
+      }
+
       if (email) {
         await sendNotification("payment_received", {
           to: { email },
@@ -69,6 +79,8 @@ export async function POST(req: Request) {
             8
           )}) is now confirmed. We'll notify you when it's out for delivery.`,
         });
+      } else {
+        console.error("No email found for order", orderId);
       }
     }
   }
