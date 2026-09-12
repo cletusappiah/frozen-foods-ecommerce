@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useCartStore } from "@/lib/cartStore";
 import { useWishlistStore } from "@/lib/wishlistStore";
@@ -28,10 +28,11 @@ function CartIcon() {
   );
 }
 
-function HeartIcon() {
+function AccountIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
     </svg>
   );
 }
@@ -45,6 +46,8 @@ export default function Navbar() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -85,6 +88,20 @@ export default function Navbar() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -141,21 +158,7 @@ export default function Navbar() {
             <ShopIcon />
             Shop
           </Link>
-          <Link href="/shop/account/orders">My Orders</Link>
-          {isAdmin && (
-            <Link href="/admin" className="text-coral">
-              Admin
-            </Link>
-          )}
-          <Link href="/shop/wishlist" className="relative flex items-center gap-1.5">
-            <HeartIcon />
-            Wishlist
-            {wishlistCount > 0 && (
-              <span className="absolute -right-3 -top-2 rounded-full bg-coral px-1.5 text-xs text-white">
-                {wishlistCount}
-              </span>
-            )}
-          </Link>
+
           <Link href="/shop/cart" className="relative flex items-center gap-1.5">
             <CartIcon />
             Cart
@@ -165,15 +168,56 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+
           {loading ? (
             <span className="w-16" />
           ) : user ? (
-            <button
-              onClick={handleLogout}
-              className="rounded-full bg-navy px-3 py-1.5 text-white transition hover:brightness-110"
-            >
-              Logout
-            </button>
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setMenuOpen((v) => !v)}
+                className="flex items-center gap-1.5 rounded-full bg-navy px-3 py-1.5 text-white transition hover:brightness-110"
+                aria-expanded={menuOpen}
+              >
+                <AccountIcon />
+              </button>
+
+              {menuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-xl border border-navy/10 bg-white py-1 shadow-lg">
+                  <Link
+                    href="/shop/account/orders"
+                    className="block px-4 py-2 text-sm text-navy hover:bg-ice"
+                  >
+                    My Orders
+                  </Link>
+                  <Link
+                    href="/shop/wishlist"
+                    className="flex items-center justify-between px-4 py-2 text-sm text-navy hover:bg-ice"
+                  >
+                    Wishlist
+                    {wishlistCount > 0 && (
+                      <span className="rounded-full bg-coral px-1.5 text-xs text-white">
+                        {wishlistCount}
+                      </span>
+                    )}
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      className="block px-4 py-2 text-sm font-medium text-coral hover:bg-ice"
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <div className="my-1 border-t border-navy/10" />
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full px-4 py-2 text-left text-sm text-navy hover:bg-ice"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <Link href="/login" className="rounded-full bg-coral px-3 py-1.5 text-white transition hover:brightness-105">
               Login
