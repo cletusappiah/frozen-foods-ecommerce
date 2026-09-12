@@ -22,12 +22,14 @@ export async function POST(req: Request) {
   }
 
   const event = JSON.parse(rawBody);
+  console.log("Webhook event received:", event.event);
 
   if (event.event === "charge.success") {
     const orderId = event.data.metadata?.order_id;
+    console.log("Order ID from metadata:", orderId);
 
     if (orderId) {
-      const { data: updatedOrder } = await supabase
+      const { data: updatedOrder, error: updateErr } = await supabase
         .from("orders")
         .update({
           payment_status: "paid",
@@ -37,6 +39,8 @@ export async function POST(req: Request) {
         .eq("id", orderId)
         .select("user_id")
         .single();
+
+      console.log("Order update result:", updatedOrder, updateErr);
 
       const { data: items } = await supabase
         .from("order_items")
@@ -62,16 +66,20 @@ export async function POST(req: Request) {
       }
 
       let email = event.data.customer?.email;
+      console.log("Email from Paystack payload:", email);
 
       if (!email && updatedOrder?.user_id) {
-        const { data: userData } = await supabase.auth.admin.getUserById(
+        console.log("Looking up email via user_id:", updatedOrder.user_id);
+        const { data: userData, error: userErr } = await supabase.auth.admin.getUserById(
           updatedOrder.user_id
         );
+        console.log("Supabase user lookup result:", userData?.user?.email, userErr);
         email = userData?.user?.email;
       }
 
       if (email) {
-        await sendNotification("payment_received", {
+        console.log("Attempting to send email to:", email);
+        const result = await sendNotification("payment_received", {
           to: { email },
           subject: "Payment received - your order is confirmed!",
           message: `Thanks! We've received your payment and your frozen food order (#${orderId.slice(
@@ -79,8 +87,9 @@ export async function POST(req: Request) {
             8
           )}) is now confirmed. We'll notify you when it's out for delivery.`,
         });
+        console.log("sendNotification result:", result);
       } else {
-        console.error("No email found for order", orderId);
+        console.log("No email found for order", orderId);
       }
     }
   }
