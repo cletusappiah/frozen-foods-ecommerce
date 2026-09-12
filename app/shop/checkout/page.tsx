@@ -27,7 +27,7 @@ export default function CheckoutPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        router.push("/login?next=/shop/checkout");
+        router.push("/login?next=/shop/cart");
         return;
       }
 
@@ -53,7 +53,7 @@ export default function CheckoutPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        router.push("/login?next=/shop/checkout");
+        router.push("/login?next=/shop/cart");
         return;
       }
 
