@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+console.log("RESEND_API_KEY present:", !!process.env.RESEND_API_KEY, "length:", process.env.RESEND_API_KEY?.length);
 
 type NotificationType =
   | "order_confirmation"
