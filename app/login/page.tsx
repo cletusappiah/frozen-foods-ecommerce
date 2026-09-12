@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -16,6 +16,13 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (showPassword) {
+      const timer = setTimeout(() => setShowPassword(false), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [showPassword]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();

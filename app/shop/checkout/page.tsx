@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cartStore";
 import { createClient } from "@/lib/supabase/client";
@@ -14,9 +14,27 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [error, setError] = useState("");
 
   const total = subtotal() + DELIVERY_FEE;
+
+  useEffect(() => {
+    async function checkAuth() {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.push("/login?next=/shop/checkout");
+        return;
+      }
+
+      setCheckingAuth(false);
+    }
+    checkAuth();
+  }, [router]);
 
   async function handlePlaceOrder(e: React.FormEvent) {
     e.preventDefault();
@@ -71,6 +89,14 @@ export default function CheckoutPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (checkingAuth) {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-16 text-center text-slate-body">
+        Checking your account...
+      </div>
+    );
   }
 
   return (
